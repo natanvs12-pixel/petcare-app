@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -34,6 +33,16 @@
 const $=s=>document.querySelector(s); const app=$('#app');
 const K='petcare_plus_puro_v1';
 const photo='https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=500&q=80';
+
+/* ============================================================
+   👇 EDITE AQUI: cole o link do seu checkout do Premium.
+   Exemplos:
+     Hotmart:  'https://pay.hotmart.com/SEU_PRODUTO'
+     Kiwify:   'https://pay.kiwify.com.br/SEU_PRODUTO'
+     Stripe:   'https://buy.stripe.com/SEU_LINK'
+   ============================================================ */
+const PREMIUM_CHECKOUT_URL='COLOQUE_AQUI_O_LINK_DO_SEU_CHECKOUT';
+
 let state=JSON.parse(localStorage.getItem(K)||'null')||{email:'',plan:'basic',pets:[],active:null,vaccines:[],reminders:[],grooming:[]};
 if(!state.grooming)state.grooming=[];
 function save(){localStorage.setItem(K,JSON.stringify(state))}
@@ -249,7 +258,87 @@ function importBackup(e){
 }
 /* ============ FIM BACKUP / RESTORE ============ */
 
-function premium(){app.innerHTML=`${topbar('Plano Premium')}<div class="p"><div class="card" style="background:#0f172a;color:white"><h2>👑 PetCare+ Premium</h2><p style="color:#cbd5e1">Libere pets ilimitados, backup, receitas extras e recursos avançados.</p><h1>R$ 27,90/mês</h1><button class="btn orange" onclick="alert('Aqui você coloca o link da Hotmart/Kiwify')">Fazer upgrade</button></div></div>${nav('set')}`}
+/* ============ PLANO PREMIUM ============ */
+function goPremium(){
+  if(!PREMIUM_CHECKOUT_URL || !PREMIUM_CHECKOUT_URL.startsWith('http')){
+    alert('⚠️ Configure o link do seu checkout na constante PREMIUM_CHECKOUT_URL no início do <script>.');
+    return;
+  }
+  window.open(PREMIUM_CHECKOUT_URL,'_blank','noopener');
+}
+
+function premium(){
+  const benefits=[
+    ['🐶','Pets ilimitados','Cadastre quantos pets quiser, cada um com perfil próprio.'],
+    ['📸','Álbum de fotos do pet','Salve momentos especiais e organize por data.'],
+    ['💉','Carteira digital de vacinação','Histórico completo, com alerta inteligente da próxima dose.'],
+    ['🛁','Histórico completo de banho/tosa','Veja gastos, locais, profissionais e fotos de cada cuidado.'],
+    ['🍽️','Alimentação premium com dicas e rotina','Conteúdo exclusivo por porte, idade e necessidade.'],
+    ['🔔','Lembretes avançados e recorrentes','Vermífugo, antipulgas, consultas — tudo no piloto automático.'],
+    ['💰','Controle financeiro dos gastos do pet','Saiba quanto você gasta por mês com cada pet.'],
+    ['🏥','Perfil completo de saúde','Alergias, medicamentos e observações em um só lugar.'],
+    ['🖨️','Imprimir/salvar informações do pet','Leve o histórico ao veterinário em PDF ou impresso.'],
+    ['📱','Experiência premium estilo aplicativo real','Interface mais avançada, sem limites de uso.']
+  ];
+  const benefitRows=benefits.map(([ic,t,d])=>`<div class="row" style="align-items:flex-start;border:1px solid #ede9fe"><div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#fef3c7,#fde68a);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;border:1px solid #fde68a">${ic}</div><div style="flex:1;min-width:0"><b>${t}</b><div class="small" style="margin-top:3px;line-height:1.4">${d}</div></div></div>`).join('');
+
+  app.innerHTML=`${topbar('Plano Premium')}<div class="p">
+
+    <div class="grad" style="background:linear-gradient(135deg,#1e1b4b 0%,#4c1d95 55%,#6d28d9 100%);position:relative;overflow:hidden">
+      <div style="position:absolute;top:-30px;right:-25px;font-size:160px;opacity:.07;line-height:1">✨</div>
+      <div style="position:relative">
+        <div style="display:inline-block;background:linear-gradient(135deg,#fde047,#f59e0b);padding:6px 14px;border-radius:999px;font-size:11px;font-weight:900;color:#78350f;margin-bottom:14px;box-shadow:0 6px 14px #f59e0b55">⭐ PLANO RECOMENDADO</div>
+        <h1 style="font-size:28px;font-weight:900;margin:0 0 10px;color:white;line-height:1.15">👑 PetCare+ Premium</h1>
+        <p style="color:#e9d5ff;line-height:1.5;margin:0;font-size:14px">Cuide de todos os seus pets em um só lugar, com recursos avançados para rotina, saúde, alimentação e controle de gastos.</p>
+        <div style="margin-top:18px;padding-top:16px;border-top:1px solid #ffffff22;display:flex;align-items:baseline;gap:8px">
+          <span style="font-size:34px;font-weight:900;color:white">R$ 27,90</span>
+          <span style="opacity:.75;color:white;font-size:14px">/mês</span>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:26px;display:flex;align-items:center;gap:8px"><span style="background:linear-gradient(135deg,#fbbf24,#f59e0b);-webkit-background-clip:text;background-clip:text;color:transparent">✨</span> O que você ganha no Premium</h3>
+    <div class="list">${benefitRows}</div>
+
+    <h3 style="margin-top:26px">📊 Comparativo dos planos</h3>
+    <div class="grid g2">
+      <div class="card" style="border:2px solid #e2e8f0;padding:16px">
+        <div class="small" style="font-weight:900;letter-spacing:.5px">PLANO ATUAL</div>
+        <h3 style="margin:4px 0 12px;font-size:18px">Básico</h3>
+        <div style="line-height:1.85;font-size:13px;color:#475569">
+          ✓ 1 pet cadastrado<br>
+          ✓ Vacinas<br>
+          ✓ Banho/tosa<br>
+          ✓ Alimentação simples<br>
+          ✓ Lembretes básicos
+        </div>
+      </div>
+      <div class="card" style="background:linear-gradient(135deg,#1e1b4b,#4c1d95);color:white;border:2px solid #f59e0b;padding:16px;position:relative;box-shadow:0 12px 28px #4c1d9555">
+        <div style="position:absolute;top:-10px;right:12px;background:linear-gradient(135deg,#fde047,#f59e0b);color:#78350f;font-size:10px;font-weight:900;padding:4px 10px;border-radius:999px">👑 RECOMENDADO</div>
+        <div class="small" style="font-weight:900;letter-spacing:.5px;color:#fde047">PREMIUM</div>
+        <h3 style="margin:4px 0 12px;color:white;font-size:18px">Premium</h3>
+        <div style="line-height:1.85;font-size:13px;color:#e9d5ff">
+          ✓ Pets ilimitados<br>
+          ✓ Carteira digital<br>
+          ✓ Álbum de fotos<br>
+          ✓ Controle financeiro<br>
+          ✓ Receitas e dicas premium<br>
+          ✓ Lembretes recorrentes<br>
+          ✓ Histórico completo
+        </div>
+      </div>
+    </div>
+
+    <button class="btn" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#78350f;font-size:16px;padding:18px;margin-top:26px;box-shadow:0 14px 28px #f59e0b55;border:1px solid #f59e0b" onclick="goPremium()">👑 Quero assinar o Premium</button>
+    <p class="small" style="text-align:center;margin-top:12px">Após assinar, você receberá acesso à versão premium do app.</p>
+
+    <div style="text-align:center;margin-top:18px;padding:14px;background:white;border:1px solid #e2e8f0;border-radius:18px">
+      <div class="small">🔒 Pagamento 100% seguro • Cancele quando quiser</div>
+    </div>
+
+  </div>${nav('set')}`;
+}
+/* ============ FIM PLANO PREMIUM ============ */
 function settings(){
   let p=pet();
   app.innerHTML=`${topbar('Configurações')}<div class="p"><div class="card"><b>E-mail:</b><br><span class="small">${state.email}</span><br><br><button class="btn secondary" onclick="register('${p.id}')">Editar pet atual</button><br><br><button class="btn secondary" onclick="register()">Adicionar outro pet</button><br><br><button class="btn secondary" onclick="install()">Como instalar no celular</button><br><br><button class="btn orange" onclick="premium()">Ver plano premium</button><br><br><button class="btn secondary" onclick="logout()">Sair</button></div><br><div class="card"><b>📦 Backup dos seus dados</b><p class="small" style="margin:8px 0 14px">Exporte um arquivo com tudo (pets, vacinas, banhos, lembretes) e guarde em segurança. Restaure quando trocar de celular ou perder os dados do navegador.</p><button class="btn purple" onclick="exportBackup()">📥 Fazer backup (exportar)</button><br><br><button class="btn secondary" onclick="triggerImport()">📤 Restaurar backup (importar)</button><input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="importBackup(event)"></div></div>${nav('set')}`;
